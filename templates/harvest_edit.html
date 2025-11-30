@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Editar corte #{{ h.id }}</h3>
+<form method='post' class='row g-3'>
+  <div class='col-md-3'><label class='form-label'>Fecha</label><input type='date' class='form-control' name='date' value='{{ h.date }}' required></div>
+  <div class='col-md-3'><label class='form-label'>Fruto</label><select class='form-select' name='fruit_id' id='fruit_id'>
+    {% for f in fruits %}<option value='{{ f.id }}' {% if h.fruit_id==f.id %}selected{% endif %}>{{ f.name }}</option>{% endfor %}
+  </select></div>
+  <div class='col-md-3'><label class='form-label'>Tamaño de caja</label><select class='form-select' name='size_id' id='size_id'>
+    {% for z in sizes %}<option value='{{ z.id }}' {% if h.size_id==z.id %}selected{% endif %}>{{ z.name }}</option>{% endfor %}
+  </select></div>
+  <div class='col-md-3'><label class='form-label'>Sector</label><select class='form-select' name='sector_id'>
+    {% for s in sectors %}<option value='{{ s.id }}' {% if h.sector_id==s.id %}selected{% endif %}>{{ s.code }}</option>{% endfor %}
+  </select></div>
+  <div class='col-md-3'><label class='form-label'>Cortadora</label><select class='form-select' name='picker_id'>
+    {% for p in pickers %}<option value='{{ p.id }}' {% if h.picker_id==p.id %}selected{% endif %}>{{ p.code }} — {{ p.name }}</option>{% endfor %}
+  </select></div>
+  <div class='col-md-3'><label class='form-label'>Cajas</label><input type='number' class='form-control' name='boxes' min='0' step='1' value='{{ h.boxes }}'></div>
+  <div class='col-md-3'><label class='form-label'>Precio por caja</label><input type='number' class='form-control' name='price' id='price' min='0' step='0.01' value='{{ '%.2f'|format(h.price_per_box) }}'>
+    <div class='form-text'>Se autollenará por fruto+tamaño. Puedes editarlo.</div></div>
+  <div class='col-12'><button class='btn btn-primary'>Guardar cambios</button> <a class='btn btn-outline-secondary' href='{{ url_for('harvest_list') }}'>Cancelar</a></div>
+</form>
+<script>
+async function fetchPrice(){const f=document.getElementById('fruit_id').value;const s=document.getElementById('size_id').value;if(!f||!s)return;try{const r=await fetch(`/api/price?fruit_id=${f}&size_id=${s}`);const d=await r.json();if(d.price!==null)document.getElementById('price').value=Number(d.price).toFixed(2);}catch(e){}}
+document.getElementById('fruit_id').addEventListener('change',fetchPrice);
+document.getElementById('size_id').addEventListener('change',fetchPrice);
+</script>
+{% endblock %}
