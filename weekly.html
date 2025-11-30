@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Resumen semanal por cortadora (pago)</h3>
+<form class='row g-2 mb-3' method='get'>
+  <div class='col-auto'><label class='form-label'>Sábado de pago</label>
+    <input type='date' class='form-control' name='saturday' value='{{ saturday }}'></div>
+  <div class='col-auto d-flex align-items-end'><button class='btn btn-primary'>Calcular</button></div>
+  <div class='col-auto d-flex align-items-end'><a class='btn btn-outline-secondary' href='{{ url_for('weekly_csv') }}?saturday={{ saturday }}'>Exportar CSV</a></div>
+</form>
+<p>Semana: <strong>{{ start }}</strong> a <strong>{{ saturday }}</strong></p>
+<div class='table-responsive'><table class='table table-sm table-striped align-middle'>
+  <thead><tr><th>ID</th><th>Nombre</th>{% for s in sizes %}<th class='text-end'>{{ s.name }}</th>{% endfor %}<th class='text-end'>Total cajas</th><th class='text-end'>Total $</th></tr></thead>
+  <tbody>
+    {% for r in table %}
+    <tr><td>{{ r.code }}</td><td>{{ r.name }}</td>{% for s in sizes %}<td class='text-end'>{{ r.sizes[s.name] }}</td>{% endfor %}<td class='text-end'><b>{{ r.total_boxes }}</b></td><td class='text-end'><b>${{ '%.2f'|format(r.total_money) }}</b></td></tr>
+    {% endfor %}
+  </tbody>
+  <tfoot><tr><th colspan='2' class='text-end'>TOTAL</th>{% for s in sizes %}<th class='text-end'>{{ total_by_size[s.name] }}</th>{% endfor %}<th class='text-end'>{{ total_boxes }}</th><th class='text-end'>${{ '%.2f'|format(total_money) }}</th></tr></tfoot>
+</table></div>
+{% endblock %}
