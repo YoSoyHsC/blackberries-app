@@ -1,3 +1,6 @@
+from database import SessionLocal
+
+
 import os
 from datetime import date, datetime, timedelta
 from decimal import Decimal
@@ -626,6 +629,13 @@ def dev_login():
     login_user(UserAdapter(u))
     return redirect(url_for("index"))
 
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    # Esto se ejecuta al final de CADA request
+    SessionLocal.remove()
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
