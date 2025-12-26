@@ -185,9 +185,10 @@ def api_harvests_bulk():
                 sector_id = int(item["sector_id"])
                 picker_id = int(item["picker_id"])
                 size_id   = int(item["size_id"])
-                boxes     = int(item.get("boxes") or 0)
+                boxes = Decimal(str(item.get("boxes") or "0"))
                 price     = Decimal(str(item.get("price") or item.get("price_per_box") or "0"))
-                total     = boxes * price
+                total = boxes * price
+
                 h = Harvest(
                     date=d, fruit_id=fruit_id, sector_id=sector_id,
                     picker_id=picker_id, size_id=size_id, boxes=boxes,
@@ -215,7 +216,7 @@ def harvest_new():
             sector_id = int(request.form["sector_id"])
             picker_id = int(request.form["picker_id"])
             size_id   = int(request.form["size_id"])
-            boxes     = int(request.form.get("boxes") or 0)
+            boxes     = Decimal(request.form.get("boxes") or 0)
             price     = Decimal(request.form.get("price") or "0")
             total     = boxes * price
             h = Harvest(date=d, fruit_id=fruit_id, sector_id=sector_id, picker_id=picker_id,
@@ -275,7 +276,7 @@ def harvest_edit(hid):
             h.sector_id = int(request.form["sector_id"])
             h.picker_id = int(request.form["picker_id"])
             h.size_id   = int(request.form["size_id"])
-            h.boxes = int(request.form.get("boxes") or 0)
+            h.boxes = Decimal(request.form.get("boxes") or "0")
             h.price_per_box = Decimal(request.form.get("price") or "0")
             h.total = h.boxes * h.price_per_box
             db.commit(); flash("Cambios guardados.","success")

@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Date, Numeric, ForeignKey, Index, DateTime, UniqueConstraint
 from sqlalchemy.orm import relationship
+from decimal import Decimal
 from database import Base
 from datetime import datetime
 
@@ -55,9 +56,9 @@ class Harvest(Base):
     sector_id = Column(Integer, ForeignKey("sectors.id"), nullable=False)
     picker_id = Column(Integer, ForeignKey("pickers.id"), nullable=False)
     size_id   = Column(Integer, ForeignKey("box_sizes.id"), nullable=False)
-    boxes = Column(Integer, nullable=False, default=0)
-    price_per_box = Column(Numeric(10,2), nullable=False, default=0)
-    total = Column(Numeric(12,2), nullable=False, default=0)
+    boxes = Column(Numeric(10,2), nullable=False, default=Decimal("0.00"))
+    price_per_box = Column(Numeric(10,2), nullable=False, default=Decimal("0.00"))
+    total = Column(Numeric(12,2), nullable=False, default=Decimal("0.00"))
     created_by = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
 
