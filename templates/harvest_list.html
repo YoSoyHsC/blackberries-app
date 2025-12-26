@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Consultas</h3>
+<form class='row g-2 mb-3' method='get'>
+  <div class='col-md-2'><label class='form-label'>Desde</label><input type='date' class='form-control' name='date_from' value='{{ request.args.get('date_from','') }}'></div>
+  <div class='col-md-2'><label class='form-label'>Hasta</label><input type='date' class='form-control' name='date_to' value='{{ request.args.get('date_to','') }}'></div>
+  <div class='col-md-2'><label class='form-label'>Fruto</label><select class='form-select' name='fruit_id'><option value=''>Todos</option>{% for f in fruits %}<option value='{{ f.id }}' {% if (request.args.get('fruit_id')|int) == f.id %}selected{% endif %}>{{ f.name }}</option>{% endfor %}</select></div>
+  <div class='col-md-2'><label class='form-label'>Sector</label><select class='form-select' name='sector_id'><option value=''>Todos</option>{% for s in sectors %}<option value='{{ s.id }}' {% if (request.args.get('sector_id')|int) == s.id %}selected{% endif %}>{{ s.code }}</option>{% endfor %}</select></div>
+  <div class='col-md-2'><label class='form-label'>Cortadora</label><select class='form-select' name='picker_id'><option value=''>Todas</option>{% for p in pickers %}<option value='{{ p.id }}' {% if (request.args.get('picker_id')|int) == p.id %}selected{% endif %}>{{ p.code }} — {{ p.name }}</option>{% endfor %}</select></div>
+  <div class='col-md-2'><label class='form-label'>Tamaño</label><select class='form-select' name='size_id'><option value=''>Todos</option>{% for z in sizes %}<option value='{{ z.id }}' {% if (request.args.get('size_id')|int) == z.id %}selected{% endif %}>{{ z.name }}</option>{% endfor %}</select></div>
+  <div class='col-12 d-flex align-items-end mt-2'>
+    <button class='btn btn-primary me-2'>Filtrar</button>
+    <a class='btn btn-outline-secondary' href='{{ url_for('export_csv') }}?date_from={{ request.args.get('date_from','') }}&date_to={{ request.args.get('date_to','') }}&fruit_id={{ request.args.get('fruit_id','') }}&sector_id={{ request.args.get('sector_id','') }}&picker_id={{ request.args.get('picker_id','') }}&size_id={{ request.args.get('size_id','') }}'>Exportar CSV</a>
+  </div>
+</form>
+<div class='table-responsive'><table class='table table-sm table-striped align-middle'>
+  <thead><tr><th>Fecha</th><th>Fruto</th><th>Tamaño</th><th>Sector</th><th>Cortadora</th><th class='text-end'>Cajas</th><th class='text-end'>Precio</th><th class='text-end'>Total</th><th></th></tr></thead>
+  <tbody>
+    {% for i in items %}
+    <tr>
+      <td>{{ i.date }}</td><td>{{ i.fruit.name }}</td><td>{{ i.size.name }}</td><td>{{ i.sector.code }}</td><td>{{ i.picker.code }} — {{ i.picker.name }}</td>
+      <td class='text-end'>{{ i.boxes }}</td><td class='text-end'>${{ '%.2f'|format(i.price_per_box) }}</td><td class='text-end'>${{ '%.2f'|format(i.total) }}</td>
+      <td class='text-end'>
+        <a class='btn btn-sm btn-outline-primary' href='{{ url_for('harvest_edit', hid=i.id) }}'>Editar</a>
+        {% if current_user.role=='admin' %}
+        <form class='d-inline' method='post' action='{{ url_for("harvest_delete", hid=i.id) }}' onsubmit="return confirm('¿Eliminar registro?');">
+          <button class='btn btn-sm btn-outline-danger'>Eliminar</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+    {% if not items %}<tr><td colspan='9' class='text-center text-muted'>Sin registros con esos filtros.</td></tr>{% endif %}
+  </tbody>
+</table></div>
+<div class='mt-2 d-flex justify-content-end gap-3'>
+  <div><b>Total cajas:</b> {{ total_boxes }}</div>
+  <div><b>Total $:</b> ${{ '%.2f'|format(total_money) }}</div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Registrar corte</h3>
+<form method='post' class='row g-3' id='formHarvest'>
+  <div class='col-md-3'><label class='form-label'>Fecha</label><input type='date' class='form-control' name='date' value='{{ default_date }}'></div>
+  <div class='col-md-3'><label class='form-label'>Fruto</label><select class='form-select' name='fruit_id' id='fruit_id' required>
+    {% for f in fruits %}<option value='{{ f.id }}'>{{ f.name }}</option>{% endfor %}
+  </select></div>
+  <div class='col-md-3'><label class='form-label'>Tamaño de caja</label><select class='form-select' name='size_id' id='size_id' required>
+    {% for z in sizes %}<option value='{{ z.id }}'>{{ z.name }}</option>{% endfor %}
+  </select></div>
+  <div class='col-md-3'><label class='form-label'>Sector</label><select class='form-select' name='sector_id' required>
+    {% for s in sectors %}<option value='{{ s.id }}'>{{ s.code }}</option>{% endfor %}
+  </select></div>
+  <div class='col-md-3'><label class='form-label'>Cortadora</label><select class='form-select' name='picker_id' required>
+    {% for p in pickers %}<option value='{{ p.id }}'>{{ p.code }} — {{ p.name }}</option>{% endfor %}
+  </select></div>
+  <div class='col-md-3'><label class='form-label'>Cajas</label><input type='number' class='form-control' name='boxes' min='0' step='any' value='0' inputmode="decimal"
+    required ></div>
+  <div class='col-md-3'><label class='form-label'>Precio por caja</label><input type='number' class='form-control' name='price' id='price' min='0' step='0.01' value='0.00'>
+    <div class='form-text'>Se autollenará por fruto+tamaño. Puedes editarlo.</div></div>
+  <div class='col-12'><button class='btn btn-primary'>Guardar</button><a class='btn btn-outline-secondary' href='{{ url_for('harvest_list') }}'>Ver registros</a></div>
+</form>
+<script>
+async function fetchPrice(){const f=document.getElementById('fruit_id').value;const s=document.getElementById('size_id').value;if(!f||!s)return;try{const r=await fetch(`/api/price?fruit_id=${f}&size_id=${s}`);const d=await r.json();if(d.price!==null)document.getElementById('price').value=Number(d.price).toFixed(2);}catch(e){}}
+document.getElementById('fruit_id').addEventListener('change',fetchPrice);
+document.getElementById('size_id').addEventListener('change',fetchPrice);
+window.addEventListener('load',fetchPrice);
+</script>
+<script src='{{ url_for('static', filename='offline.js') }}'></script>
+<script>
+document.getElementById('formHarvest').addEventListener('submit', async (e)=>{
+  if(navigator.onLine) return;
+  e.preventDefault();
+  const form=e.target;
+  const payload={temp_id:Date.now(),date:form.elements['date'].value,fruit_id:form.elements['fruit_id'].value,size_id:form.elements['size_id'].value,sector_id:form.elements['sector_id'].value,picker_id:form.elements['picker_id'].value,boxes:form.elements['boxes'].value||0,price:form.elements['price'].value||0};
+  try{await offlineSaveHarvest(payload);alert('Guardado sin conexión. Se sincronizará automáticamente cuando haya internet.');form.reset();}catch(err){alert('No se pudo guardar offline: '+err);}requestSync();
+});
+</script>
+{% endblock %}

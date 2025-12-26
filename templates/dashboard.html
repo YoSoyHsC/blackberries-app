@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Dashboard (últimos 7 días)</h3>
+<div class='row g-3'>
+  <div class='col-md-3'><div class='card text-bg-primary'><div class='card-body'>
+    <div class='fs-6'>Cajas</div><div class='fs-2 fw-bold'>{{ total_boxes }}</div>
+  </div></div></div>
+  <div class='col-md-3'><div class='card text-bg-success'><div class='card-body'>
+    <div class='fs-6'>Total $</div><div class='fs-2 fw-bold'>${{ '%.2f'|format(total_money or 0) }}</div>
+  </div></div></div>
+</div>
+<div class='row g-3 mt-2'>
+  <div class='col-md-6'><div class='card'><div class='card-body'>
+    <h6 class='card-title'>Por fruto ({{ start }} a {{ end }})</h6><canvas id='chartFruit'></canvas>
+  </div></div></div>
+  <div class='col-md-6'><div class='card'><div class='card-body'>
+    <h6 class='card-title'>Por sector ({{ start }} a {{ end }})</h6><canvas id='chartSector'></canvas>
+  </div></div></div>
+</div>
+<script>
+const fLabels={{ f_labels|tojson }}; const fBoxes={{ f_boxes|tojson }};
+const sLabels={{ s_labels|tojson }}; const sBoxes={{ s_boxes|tojson }};
+new Chart(document.getElementById('chartFruit'),{type:'bar',data:{labels:fLabels,datasets:[{label:'Cajas',data:fBoxes}]},options:{responsive:true,plugins:{legend:{display:false}}}});
+new Chart(document.getElementById('chartSector'),{type:'bar',data:{labels:sLabels,datasets:[{label:'Cajas',data:sBoxes}]},options:{responsive:true,plugins:{legend:{display:false}}}});
+</script>
+{% endblock %}

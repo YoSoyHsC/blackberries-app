@@ -1,0 +1,4 @@
+const DB_NAME='berries-db';const DB_VERSION=1;const STORE='pending-harvests';
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,DB_VERSION);r.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains(STORE))db.createObjectStore(STORE,{keyPath:'temp_id'});};r.onsuccess=e=>res(e.target.result);r.onerror=e=>rej(e.target.error);});}
+async function offlineSaveHarvest(item){const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(item);tx.oncomplete=()=>res(true);tx.onerror=e=>rej(e.target.error);});}
+function requestSync(){if(navigator.serviceWorker){navigator.serviceWorker.ready.then(reg=>{if(reg.sync)reg.sync.register('sync-harvests');if(navigator.onLine&&navigator.serviceWorker.controller){navigator.serviceWorker.controller.postMessage({type:'SYNC_NOW'});}});}}

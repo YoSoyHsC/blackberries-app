@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3 class="mb-3">Reportes</h3>
+<form class="row g-2 mb-3" method="get">
+  <div class="col-md-3">
+    <label class="form-label">Desde</label>
+    <input type="date" class="form-control" name="date_from" value="{{ start }}">
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Hasta</label>
+    <input type="date" class="form-control" name="date_to" value="{{ end }}">
+  </div>
+  <div class="col-md-2 d-flex align-items-end"><button class="btn btn-primary">Aplicar</button></div>
+</form>
+
+{% macro pivot_table(title, rows, sizes, totals, grand) -%}
+  <div class="card mb-4"><div class="card-body">
+    <h5 class="card-title">{{ title }}</h5>
+    <div class="table-responsive"><table class="table table-sm table-striped align-middle">
+      <thead>
+        <tr><th>Etiqueta</th>{% for s in sizes %}<th class="text-end">{{ s.name }}</th>{% endfor %}<th class="text-end">Total</th></tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+          <tr>
+            <td>{{ r.label }}</td>
+            {% for s in sizes %}<td class="text-end">{{ r.sizes[s.name] }}</td>{% endfor %}
+            <td class="text-end"><b>{{ r.total }}</b></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>TOTAL</th>
+          {% for s in sizes %}<th class="text-end">{{ totals[s.name] }}</th>{% endfor %}
+          <th class="text-end">{{ grand }}</th>
+        </tr>
+      </tfoot>
+    </table></div>
+  </div></div>
+{%- endmacro %}
+
+{{ pivot_table('Por fruto', fruit_rows, sizes, fruit_totals, fruit_grand) }}
+{{ pivot_table('Por sector', sector_rows, sizes, sector_totals, sector_grand) }}
+{{ pivot_table('Por cortadora', picker_rows, sizes, picker_totals, picker_grand) }}
+{% endblock %}
