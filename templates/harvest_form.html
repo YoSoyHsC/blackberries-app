@@ -15,7 +15,7 @@
   <div class='col-md-3'><label class='form-label'>Cortadora</label><select class='form-select' name='picker_id' required>
     {% for p in pickers %}<option value='{{ p.id }}'>{{ p.code }} — {{ p.name }}</option>{% endfor %}
   </select></div>
-  <div class='col-md-3'><label class='form-label'>Cajas</label><input type='number' class='form-control' name='boxes' min='0' step='any' value='0' inputmode="decimal"
+  <div class='col-md-3'><label class='form-label'>Cajas</label><input type='number' class='form-control' name='boxes' min='0' step='0.5' value='0' inputmode="decimal"
     required ></div>
   <div class='col-md-3'><label class='form-label'>Precio por caja</label><input type='number' class='form-control' name='price' id='price' min='0' step='0.01' value='0.00'>
     <div class='form-text'>Se autollenará por fruto+tamaño. Puedes editarlo.</div></div>

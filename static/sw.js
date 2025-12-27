@@ -1,4 +1,4 @@
-const CACHE='berries-cache-v1';const OFFLINE_URL='/static/offline.html';
+const CACHE='berries-cache-v2';const OFFLINE_URL='/static/offline.html';
 const ASSETS=['/','/harvests/new','/harvests','/reports','/weekly','/login',OFFLINE_URL,
 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js',
